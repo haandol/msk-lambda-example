@@ -26,7 +26,8 @@ def handler(event, context):
     try:
         admin = get_admin()
         admin.create_topics([NewTopic(name=name, num_partitions=1, replication_factor=2)])
-    except:
+    except Exception as e:
         admin = None
         traceback.print_exc()
+        raise e
     return 'ok'

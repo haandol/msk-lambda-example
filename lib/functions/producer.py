@@ -17,11 +17,6 @@ def handler(event, context):
         value_serializer=lambda v: json.dumps(v).encode('utf-8')
     )
 
-    for _ in range(100):
-        future = producer.send(topic, data)
-        record_metadata = future.get(timeout=1)
-        print (record_metadata.topic)
-        print (record_metadata.partition)
-        print (record_metadata.offset)
+    producer.send(topic, data)
     producer.flush()
     return 'ok'

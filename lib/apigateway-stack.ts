@@ -51,11 +51,12 @@ export class ApiGatewayStack extends cdk.Stack {
       managedPolicies: [
         { managedPolicyArn: 'arn:aws:iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs' },
         { managedPolicyArn: 'arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole' },
-      ]
+        { managedPolicyArn: 'arn:aws:iam::aws:policy/AWSLambdaFullAccess' },
+      ],
     });
-    const requestTemplates = JSON.stringify({
+    const requestTemplates = {
       'application/json': "$input.json('$')",
-    });
+    };
     const integrationResponses: apigw.IntegrationResponse[] = [
       {
         statusCode: '200',
@@ -84,7 +85,7 @@ export class ApiGatewayStack extends cdk.Stack {
       requestTemplates,
       integrationResponses,
     });
-    api.root.addMethod('PUT', topicIntegration, methodOptions);
+    api.root.addResource('topic').addMethod('POST', topicIntegration, methodOptions);
   }
 
 }

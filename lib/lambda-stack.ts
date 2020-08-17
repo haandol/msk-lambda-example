@@ -29,7 +29,7 @@ export class LambdaStack extends cdk.Stack {
       managedPolicies: [
         { managedPolicyArn: 'arn:aws:iam::aws:policy/service-role/AWSLambdaMSKExecutionRole' },
         { managedPolicyArn: 'arn:aws:iam::aws:policy/AmazonMSKFullAccess' },
-      ]
+      ],
     });
 
     const consumerFunction = new lambda.Function(this, 'ConsumerFunction', {
