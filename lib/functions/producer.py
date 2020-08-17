@@ -17,6 +17,7 @@ def handler(event, context):
         value_serializer=lambda v: json.dumps(v).encode('utf-8')
     )
 
-    producer.send(topic, data)
+    for _ in range(100):
+        producer.send(topic, data)
     producer.flush()
     return 'ok'
