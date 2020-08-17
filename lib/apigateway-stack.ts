@@ -53,9 +53,9 @@ export class ApiGatewayStack extends cdk.Stack {
         { managedPolicyArn: 'arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole' },
       ]
     });
-    const requestTemplates = {
+    const requestTemplates = JSON.stringify({
       'application/json': "$input.json('$')",
-    };
+    });
     const integrationResponses: apigw.IntegrationResponse[] = [
       {
         statusCode: '200',
