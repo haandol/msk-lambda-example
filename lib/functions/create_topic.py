@@ -1,7 +1,10 @@
+import os
 import traceback
 from kafka import KafkaAdminClient
 from kafka.admin import NewTopic
 
+BOOTSTRAP_SERVERS = os.environ['BOOTSTRAP_SERVERS'].split(',')
+KAFKA_VERSION = os.environ['KAFKA_VERSION'].split('.')
 admin = None
 
 
@@ -11,11 +14,8 @@ def get_admin():
         return admin
 
     admin = KafkaAdminClient(
-        bootstrap_servers=[
-        'b-2.mskexamplealphacl.ps2g8g.c3.kafka.ap-northeast-2.amazonaws.com:9094',
-        'b-1.mskexamplealphacl.ps2g8g.c3.kafka.ap-northeast-2.amazonaws.com:9094',
-        ],
-        api_version=(2, 2, 1),
+        bootstrap_servers=BOOTSTRAP_SERVERS,
+        api_version=KAFKA_VERSION,
         security_protocol='SSL'
     )
     return admin

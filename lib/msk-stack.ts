@@ -32,7 +32,7 @@ export class MskStack extends cdk.Stack {
         },
       },
       clusterName: `${ns}Cluster`,
-      kafkaVersion: '2.2.1',
+      kafkaVersion: '2.4.1',
       numberOfBrokerNodes: 2, 
     });
   }

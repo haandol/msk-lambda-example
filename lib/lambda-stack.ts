@@ -10,6 +10,8 @@ interface Props extends cdk.StackProps {
   cluster: msk.CfnCluster;
   subnets: ec2.ISubnet[];
   securityGroup: ec2.ISecurityGroup;
+  bootStrapServers: string;
+  kafkaVersion: string;
 }
 
 export class LambdaStack extends cdk.Stack {
@@ -58,6 +60,10 @@ export class LambdaStack extends cdk.Stack {
       role,
       layers: [kafkaLayer],
       allowPublicSubnet: true,
+      environment: {
+        BOOTSTRAP_SERVERS: props.bootStrapServers,
+        KAFKA_VERSION: props.kafkaVersion,
+      },
       currentVersionOptions: {
         removalPolicy: cdk.RemovalPolicy.RETAIN,
       },
@@ -74,6 +80,10 @@ export class LambdaStack extends cdk.Stack {
       role,
       layers: [kafkaLayer],
       allowPublicSubnet: true,
+      environment: {
+        BOOTSTRAP_SERVERS: props.bootStrapServers,
+        KAFKA_VERSION: props.kafkaVersion,
+      },
       currentVersionOptions: {
         removalPolicy: cdk.RemovalPolicy.RETAIN,
       },

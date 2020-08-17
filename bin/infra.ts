@@ -5,13 +5,13 @@ import { VpcStack } from '../lib/vpc-stack';
 import { MskStack } from '../lib/msk-stack';
 import { LambdaStack } from '../lib/lambda-stack';
 import { ApiGatewayStack } from '../lib/apigateway-stack';
+import { VpcId, MskBootstrapServers, KafkaVersion } from '../lib/interfaces/constant';
 
 const ns = 'MskExampleAlpha';
-const vpcId = 'vpc-f3ea2498';
 const StackProps = {
   env: {
     account: '929831892372',
-    region: 'ap-northeast-2',
+    region: 'us-east-1',
   }
 };
 
@@ -23,7 +23,7 @@ const app = new cdk.App({
 
 const vpcStack = new VpcStack(app, `${ns}VpcStack`, {
   ...StackProps,
-  vpcId,
+  vpcId: VpcId,
 });
 
 const mskStack = new MskStack(app, `${ns}MskStack`, {
@@ -38,6 +38,8 @@ const lambdaStack = new LambdaStack(app, `${ns}LambdaStack`, {
   cluster: mskStack.cluster,
   subnets: mskStack.subnets,
   securityGroup: mskStack.securityGroup,
+  bootStrapServers: MskBootstrapServers,
+  kafkaVersion: KafkaVersion,
 });
 lambdaStack.addDependency(mskStack);
 
