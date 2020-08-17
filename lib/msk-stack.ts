@@ -1,6 +1,7 @@
 import * as cdk from '@aws-cdk/core';
 import * as msk from '@aws-cdk/aws-msk';
 import * as ec2 from '@aws-cdk/aws-ec2';
+import { KafkaVersion } from './interfaces/constant';
 
 interface Props extends cdk.StackProps {
   vpc: ec2.IVpc;
@@ -32,7 +33,7 @@ export class MskStack extends cdk.Stack {
         },
       },
       clusterName: `${ns}Cluster`,
-      kafkaVersion: '2.4.1',
+      kafkaVersion: KafkaVersion,
       numberOfBrokerNodes: 2, 
     });
   }

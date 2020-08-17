@@ -3,7 +3,7 @@ import json
 from kafka import KafkaProducer
 
 BOOTSTRAP_SERVERS = os.environ['BOOTSTRAP_SERVERS'].split(',')
-KAFKA_VERSION = os.environ['KAFKA_VERSION'].split('.')
+KAFKA_VERSION = tuple(map(int, os.environ['KAFKA_VERSION'].split('.')))
 
 
 def on_send_success(record_metadata):

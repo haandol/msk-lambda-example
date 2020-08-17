@@ -4,7 +4,7 @@ from kafka import KafkaAdminClient
 from kafka.admin import NewTopic
 
 BOOTSTRAP_SERVERS = os.environ['BOOTSTRAP_SERVERS'].split(',')
-KAFKA_VERSION = os.environ['KAFKA_VERSION'].split('.')
+KAFKA_VERSION = tuple(map(int, os.environ['KAFKA_VERSION'].split('.')))
 admin = None
 
 
