@@ -1,4 +1,4 @@
-import logging
+import traceback
 from kafka import KafkaAdminClient
 from kafka.admin import NewTopic
 
