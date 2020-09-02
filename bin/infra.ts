@@ -5,7 +5,7 @@ import { VpcStack } from '../lib/vpc-stack';
 import { MskStack } from '../lib/msk-stack';
 import { LambdaStack } from '../lib/lambda-stack';
 import { ApiGatewayStack } from '../lib/apigateway-stack';
-import { VpcId, MskBootstrapServers, KafkaVersion } from '../lib/interfaces/constant';
+import { MskBootstrapServers, KafkaVersion } from '../lib/interfaces/constant';
 
 const ns = 'MskExampleAlpha';
 const StackProps = {
@@ -23,7 +23,6 @@ const app = new cdk.App({
 
 const vpcStack = new VpcStack(app, `${ns}VpcStack`, {
   ...StackProps,
-  vpcId: VpcId,
 });
 
 const mskStack = new MskStack(app, `${ns}MskStack`, {
