@@ -21,7 +21,7 @@ export class MskStack extends cdk.Stack {
     });
     this.securityGroup.connections.allowInternally(ec2.Port.allTraffic());
 
-    this.subnets = props.vpc.publicSubnets.slice(0, 2);
+    this.subnets = props.vpc.privateSubnets.slice(0, 2);
 
     this.cluster = new msk.CfnCluster(this, `MskStack`, {
       brokerNodeGroupInfo: {

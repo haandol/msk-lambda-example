@@ -11,7 +11,7 @@ const ns = 'MskExampleAlpha';
 const StackProps = {
   env: {
     account: '929831892372',
-    region: 'us-east-1',
+    region: 'ap-northeast-2',
   }
 };
 
