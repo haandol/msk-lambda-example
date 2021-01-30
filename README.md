@@ -38,6 +38,8 @@ $ cdk deploy "*" --require-approval never
 
 # Config & Usage
 
+```below example uses [httpie](https://httpie.io/docs)```
+
 The repository has two endpoints
 
 * `POST /` - send data to MSK cluster
