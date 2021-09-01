@@ -91,7 +91,7 @@ x-amzn-RequestId: 85433fef-d309-4d78-850c-df78f89a0b64
 "ok"
 ```
 
-5. lastly, you can send data to topic and see consumer poll data from msk
+5. lastly, you can send data to topic
 
 ```bash
 $ http post https://xxx.execute-api.us-east-1.amazonaws.com/dev topic=mytopic data="Hello MSK"
@@ -110,6 +110,8 @@ x-amzn-RequestId: ac315665-2b02-422c-bc87-0840c89954dc
 
 "ok"
 ```
+
+6. and see logs of consumer function on CloudWatch to confirm the function is polling data from MSK
 
 # Troubleshoot
 
