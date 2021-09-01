@@ -127,5 +127,11 @@
         ]
       }
     ]
-  }
+  },
+  "availability-zones:account=929831892372:region=ap-northeast-2": [
+    "ap-northeast-2a",
+    "ap-northeast-2b",
+    "ap-northeast-2c",
+    "ap-northeast-2d"
+  ]
 }

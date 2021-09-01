@@ -1,3 +1,5 @@
+import json
+
 def handler(event, context):
-    print(event)
-    return event
+    print(json.dumps(event))
+    return 'consumed'

@@ -1,4 +1,9 @@
-// TODO: replace this with your Bootstrap servers
-export const MskBootstrapServers = 'b-1.mskexamplealphacl.hvcsfy.c3.kafka.ap-northeast-2.amazonaws.com:9094,b-2.mskexamplealphacl.hvcsfy.c3.kafka.ap-northeast-2.amazonaws.com:9094';
+export const ns = 'MskExampleAlpha';
 
-export const KafkaVersion = '2.2.1';
+// TODO: replace this with your Bootstrap servers
+export const MskBootstrapServers = ''
+
+// TODO: replace this with arn of msk cluster
+export const ClusterArn = ''
+// TODO: replace this with name of topic for testing
+export const Topic = 'mytopic'

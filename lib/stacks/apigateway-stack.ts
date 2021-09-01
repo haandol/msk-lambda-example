@@ -51,7 +51,7 @@ export class ApiGatewayStack extends cdk.Stack {
       managedPolicies: [
         { managedPolicyArn: 'arn:aws:iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs' },
         { managedPolicyArn: 'arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole' },
-        { managedPolicyArn: 'arn:aws:iam::aws:policy/AWSLambdaFullAccess' },
+        { managedPolicyArn: 'arn:aws:iam::aws:policy/AWSLambda_FullAccess' },
       ],
     });
     const requestTemplates = {

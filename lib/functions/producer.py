@@ -1,5 +1,6 @@
 import os
 import json
+import logging
 from kafka import KafkaProducer
 
 BOOTSTRAP_SERVERS = os.environ['BOOTSTRAP_SERVERS'].split(',')
@@ -13,7 +14,7 @@ def on_send_success(record_metadata):
 
 
 def on_send_error(excp):
-    log.error('I am an errback', exc_info=excp)
+    logging.error('I am an errback', exc_info=excp)
 
 
 def handler(event, context):

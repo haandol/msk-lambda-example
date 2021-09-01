@@ -1,19 +1,11 @@
 #!/usr/bin/env node
 import 'source-map-support/register';
 import * as cdk from '@aws-cdk/core';
-import { VpcStack } from '../lib/vpc-stack';
-import { MskStack } from '../lib/msk-stack';
-import { LambdaStack } from '../lib/lambda-stack';
-import { ApiGatewayStack } from '../lib/apigateway-stack';
-import { MskBootstrapServers, KafkaVersion } from '../lib/interfaces/constant';
-
-const ns = 'MskExampleAlpha';
-const StackProps = {
-  env: {
-    account: '929831892372',
-    region: 'ap-northeast-2',
-  }
-};
+import { VpcStack } from '../lib/stacks/vpc-stack';
+import { MskStack } from '../lib/stacks/msk-stack';
+import { LambdaStack } from '../lib/stacks/lambda-stack';
+import { ApiGatewayStack } from '../lib/stacks/apigateway-stack';
+import { ns } from '../lib/interfaces/constant';
 
 const app = new cdk.App({
   context: {
@@ -21,26 +13,18 @@ const app = new cdk.App({
   },
 });
 
-const vpcStack = new VpcStack(app, `${ns}VpcStack`, {
-  ...StackProps,
-});
+const vpcStack = new VpcStack(app, `${ns}VpcStack`);
 
 const mskStack = new MskStack(app, `${ns}MskStack`, {
-  ...StackProps,
   vpc: vpcStack.vpc,
+  securityGroup: vpcStack.securityGroup,
 });
 mskStack.addDependency(vpcStack);
 
 const lambdaStack = new LambdaStack(app, `${ns}LambdaStack`, {
-  ...StackProps,
   vpc: vpcStack.vpc,
-  cluster: mskStack.cluster,
-  subnets: mskStack.subnets,
-  securityGroup: mskStack.securityGroup,
-  bootStrapServers: MskBootstrapServers,
-  kafkaVersion: KafkaVersion,
+  securityGroup: vpcStack.securityGroup,
 });
-lambdaStack.addDependency(mskStack);
 
 const apigatewayStack = new ApiGatewayStack(app, `${ns}ApigatewayStack`, {
   producerFunction: lambdaStack.producerFunction,

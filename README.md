@@ -26,19 +26,30 @@ $ npm i
 Install cdk in global context and run `cdk init` if you did not initailize cdk yet.
 
 ```bash
-$ npm i -g cdk@1.87.1
+$ npm i -g cdk@1.119.0
 $ cdk bootstrap
+```
+
+Install python layer
+```bash
+$ cd lib/layers/kafka/python
+$ pip install -r requirements.txt -t .
 ```
 
 Deploy CDK Stacks on AWS
 
 ```bash
+$ cd -
 $ cdk deploy "*" --require-approval never
 ```
 
 # Config & Usage
 
-```below example uses [httpie](https://httpie.io/docs)```
+> below example uses [httpie](https://httpie.io/docs)
+
+```bash
+$ pip install httpie
+```
 
 The repository has two endpoints
 
@@ -51,9 +62,17 @@ After creating MSK cluster,
 
 <img src="https://haandol.github.io/assets/img/2020/0816/msk-client-info.png" />
 
-2. redeploy lambda function by running `cdk deploy "*"` commands
+2. and replace `ClusterArn` variable at the same file with your clusterArn too.
 
-3. invoke api-gateway `/topic` to create topic
+> this is kinda bug of CDK. passing cluster from MSKStack to LambdaStack does not work for some reason.
+
+3. redeploy lambda function by running `cdk deploy "*"` commands just mentioned above.
+
+you can see the MSK trigger has been `Enabled` on you `Consumer` Function on Lambda page.
+
+<img src="https://haandol.github.io/assets/img/2020/0816/msk-trigger.png" />
+
+4. invoke api-gateway `/topic` to create topic
 ```bash
 $ http post https://xxx.execute-api.us-east-1.amazonaws.com/dev/topic name=mytopic
 HTTP/1.1 200 OK
@@ -71,10 +90,6 @@ x-amzn-RequestId: 85433fef-d309-4d78-850c-df78f89a0b64
 
 "ok"
 ```
-
-4. then, add event mapping on Consumer lambda function
-
-<img src="https://haandol.github.io/assets/img/2020/0816/lambda-msk-event-source.png" />
 
 5. lastly, you can send data to topic and see consumer poll data from msk
 
