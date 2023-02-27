@@ -105,7 +105,7 @@ x-amzn-RequestId: ac315665-2b02-422c-bc87-0840c89954dc
 
 5. or see logs of consumer function on CloudWatch to confirm the function is polling data from MSK
 
-![](/imgs/consumer-logs.png)
+![](/imgs/consumer-log.png)
 
 ```bash
 $ echo "IkhlbGxvIE1TSyI=" | base64 -d
