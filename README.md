@@ -63,7 +63,7 @@ you can see the MSK trigger has been `Enabled` on you `Consumer` Function on Lam
 
 <img src="https://haandol.github.io/assets/img/2020/0816/msk-trigger.png" />
 
-3. invoke api-gateway `/topic` to create topic
+3. invoke api-gateway `/topic` to create topic, the endpoint aws printed on your terminal after deploying cdk.
 
 ```bash
 $ http post https://xxx.execute-api.us-east-1.amazonaws.com/dev/topic name=mytopic
