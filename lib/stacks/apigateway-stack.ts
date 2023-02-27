@@ -21,7 +21,6 @@ export class ApiGatewayStack extends cdk.Stack {
       deploy: true,
       deployOptions: {
         stageName,
-        loggingLevel: apigw.MethodLoggingLevel.ERROR,
       },
       defaultCorsPreflightOptions: {
         allowOrigins: apigw.Cors.ALL_ORIGINS,
