@@ -57,17 +57,13 @@ After creating MSK cluster,
 
 <img src="https://haandol.github.io/assets/img/2020/0816/msk-client-info.png" />
 
-2. and replace `ClusterArn` variable at the same file with your clusterArn too.
-
-> this is kinda bug of CDK. passing cluster from MSKStack to LambdaStack does not work for some reason.
-
-3. redeploy lambda function by running `cdk deploy "*"` commands just mentioned above.
+2. redeploy lambda function by running `cdk deploy "*"` commands just mentioned above.
 
 you can see the MSK trigger has been `Enabled` on you `Consumer` Function on Lambda page.
 
 <img src="https://haandol.github.io/assets/img/2020/0816/msk-trigger.png" />
 
-4. invoke api-gateway `/topic` to create topic
+3. invoke api-gateway `/topic` to create topic
 
 ```bash
 $ http post https://xxx.execute-api.us-east-1.amazonaws.com/dev/topic name=mytopic
@@ -87,7 +83,7 @@ x-amzn-RequestId: 85433fef-d309-4d78-850c-df78f89a0b64
 "ok"
 ```
 
-5. lastly, you can send data to topic
+4. lastly, you can send data to topic
 
 ```bash
 $ http post https://xxx.execute-api.us-east-1.amazonaws.com/dev topic=mytopic data="Hello MSK"
@@ -107,7 +103,7 @@ x-amzn-RequestId: ac315665-2b02-422c-bc87-0840c89954dc
 "ok"
 ```
 
-6. and see logs of consumer function on CloudWatch to confirm the function is polling data from MSK
+5. or see logs of consumer function on CloudWatch to confirm the function is polling data from MSK
 
 # Troubleshoot
 

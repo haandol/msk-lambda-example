@@ -24,6 +24,7 @@ mskStack.addDependency(vpcStack);
 const lambdaStack = new LambdaStack(app, `${ns}LambdaStack`, {
   vpc: vpcStack.vpc,
   securityGroup: vpcStack.securityGroup,
+  cluster: mskStack.cluster,
 });
 lambdaStack.addDependency(mskStack);
 

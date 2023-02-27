@@ -7,11 +7,12 @@ import * as msk from '@aws-cdk/aws-msk-alpha';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as lambdaPython from '@aws-cdk/aws-lambda-python-alpha';
 import * as eventSources from 'aws-cdk-lib/aws-lambda-event-sources';
-import { ClusterArn, Topic, MskBootstrapServers } from '../interfaces/constant';
+import { Topic, MskBootstrapServers } from '../interfaces/constant';
 
 interface Props extends cdk.StackProps {
   vpc: ec2.IVpc;
   securityGroup: ec2.ISecurityGroup;
+  cluster: msk.ICluster;
 }
 
 export class LambdaStack extends cdk.Stack {
@@ -52,7 +53,7 @@ export class LambdaStack extends cdk.Stack {
 
     const mskEventSource = new eventSources.ManagedKafkaEventSource({
       topic: Topic,
-      clusterArn: ClusterArn,
+      clusterArn: props.cluster.clusterArn,
       startingPosition: lambda.StartingPosition.TRIM_HORIZON,
     });
     this.consumerFunction.addEventSource(mskEventSource);
