@@ -22,7 +22,7 @@ export class MskStack extends cdk.Stack {
     this.cluster = new msk.Cluster(this, `MskStack`, {
       clusterName: `${ns.toLowerCase()}`,
       kafkaVersion: msk.KafkaVersion.V2_8_1,
-      numberOfBrokerNodes: 2,
+      numberOfBrokerNodes: 1,
       vpc: props.vpc,
       vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
       securityGroups: [props.securityGroup],
