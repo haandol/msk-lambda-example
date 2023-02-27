@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import 'source-map-support/register';
-import * as cdk from '@aws-cdk/core';
+import * as cdk from 'aws-cdk-lib';
 import { VpcStack } from '../lib/stacks/vpc-stack';
 import { MskStack } from '../lib/stacks/msk-stack';
 import { LambdaStack } from '../lib/stacks/lambda-stack';
@@ -25,6 +25,7 @@ const lambdaStack = new LambdaStack(app, `${ns}LambdaStack`, {
   vpc: vpcStack.vpc,
   securityGroup: vpcStack.securityGroup,
 });
+lambdaStack.addDependency(mskStack);
 
 const apigatewayStack = new ApiGatewayStack(app, `${ns}ApigatewayStack`, {
   producerFunction: lambdaStack.producerFunction,

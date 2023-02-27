@@ -1,7 +1,8 @@
-import * as cdk from '@aws-cdk/core';
-import * as iam from '@aws-cdk/aws-iam';
-import * as lambda from '@aws-cdk/aws-lambda';
-import * as apigw from '@aws-cdk/aws-apigateway';
+import * as cdk from 'aws-cdk-lib';
+import { Construct } from 'constructs';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+import * as apigw from 'aws-cdk-lib/aws-apigateway';
 
 interface Props extends cdk.StackProps {
   producerFunction: lambda.IFunction;
@@ -9,12 +10,12 @@ interface Props extends cdk.StackProps {
 }
 
 export class ApiGatewayStack extends cdk.Stack {
-  constructor(scope: cdk.Construct, id: string, props: Props) {
+  constructor(scope: Construct, id: string, props: Props) {
     super(scope, id, props);
 
     const ns = scope.node.tryGetContext('ns') || '';
 
-    const stageName = 'dev'
+    const stageName = 'dev';
     const api = new apigw.RestApi(this, `RestApi`, {
       restApiName: `${ns}RestApi`,
       deploy: true,
@@ -43,14 +44,20 @@ export class ApiGatewayStack extends cdk.Stack {
             'method.response.header.Access-Control-Allow-Methods': true,
             'method.response.header.Access-Control-Allow-Credentials': true,
           },
-        }
+        },
       ],
     };
     const credentialsRole = new iam.Role(this, 'ApigwCredentialRole', {
       assumedBy: new iam.ServicePrincipal('apigateway.amazonaws.com'),
       managedPolicies: [
-        { managedPolicyArn: 'arn:aws:iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs' },
-        { managedPolicyArn: 'arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole' },
+        {
+          managedPolicyArn:
+            'arn:aws:iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs',
+        },
+        {
+          managedPolicyArn:
+            'arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole',
+        },
         { managedPolicyArn: 'arn:aws:iam::aws:policy/AWSLambda_FullAccess' },
       ],
     });
@@ -61,31 +68,40 @@ export class ApiGatewayStack extends cdk.Stack {
       {
         statusCode: '200',
         responseParameters: {
-          'method.response.header.Access-Control-Allow-Headers': "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
+          'method.response.header.Access-Control-Allow-Headers':
+            "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
           'method.response.header.Access-Control-Allow-Origin': "'*'",
-          'method.response.header.Access-Control-Allow-Methods': "'OPTIONS,POST,GET'",
+          'method.response.header.Access-Control-Allow-Methods':
+            "'OPTIONS,POST,GET'",
           'method.response.header.Access-Control-Allow-Credentials': "'false'",
         },
-      }
+      },
     ];
 
-    const producerIntegration = new apigw.LambdaIntegration(props.producerFunction, {
-      proxy: false,
-      passthroughBehavior: apigw.PassthroughBehavior.NEVER,
-      credentialsRole,
-      requestTemplates,
-      integrationResponses,
-    });
+    const producerIntegration = new apigw.LambdaIntegration(
+      props.producerFunction,
+      {
+        proxy: false,
+        passthroughBehavior: apigw.PassthroughBehavior.NEVER,
+        credentialsRole,
+        requestTemplates,
+        integrationResponses,
+      }
+    );
     api.root.addMethod('POST', producerIntegration, methodOptions);
 
-    const topicIntegration = new apigw.LambdaIntegration(props.createTopicFunction, {
-      proxy: false,
-      passthroughBehavior: apigw.PassthroughBehavior.NEVER,
-      credentialsRole,
-      requestTemplates,
-      integrationResponses,
-    });
-    api.root.addResource('topic').addMethod('POST', topicIntegration, methodOptions);
+    const topicIntegration = new apigw.LambdaIntegration(
+      props.createTopicFunction,
+      {
+        proxy: false,
+        passthroughBehavior: apigw.PassthroughBehavior.NEVER,
+        credentialsRole,
+        requestTemplates,
+        integrationResponses,
+      }
+    );
+    api.root
+      .addResource('topic')
+      .addMethod('POST', topicIntegration, methodOptions);
   }
-
 }

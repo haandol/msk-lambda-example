@@ -1,11 +1,13 @@
 import * as path from 'path';
-import * as cdk from '@aws-cdk/core';
-import * as iam from '@aws-cdk/aws-iam';
-import * as ec2 from '@aws-cdk/aws-ec2';
-import * as msk from '@aws-cdk/aws-msk';
-import * as lambda from '@aws-cdk/aws-lambda';
-import * as eventSources from '@aws-cdk/aws-lambda-event-sources'
-import { ClusterArn, Topic, MskBootstrapServers } from '../interfaces/constant'
+import * as cdk from 'aws-cdk-lib';
+import { Construct } from 'constructs';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as msk from '@aws-cdk/aws-msk-alpha';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+import * as lambdaPython from '@aws-cdk/aws-lambda-python-alpha';
+import * as eventSources from 'aws-cdk-lib/aws-lambda-event-sources';
+import { ClusterArn, Topic, MskBootstrapServers } from '../interfaces/constant';
 
 interface Props extends cdk.StackProps {
   vpc: ec2.IVpc;
@@ -17,87 +19,101 @@ export class LambdaStack extends cdk.Stack {
   public readonly producerFunction: lambda.IFunction;
   public readonly consumerFunction: lambda.IFunction;
 
-  constructor(scope: cdk.Construct, id: string, props: Props) {
+  constructor(scope: Construct, id: string, props: Props) {
     super(scope, id, props);
 
     const ns = scope.node.tryGetContext('ns') || '';
 
-    const kafkaLayer = new lambda.LayerVersion(this, `KafkaLayer`, {
-      compatibleRuntimes: [lambda.Runtime.PYTHON_3_8],
-      code: lambda.Code.fromAsset(path.resolve(__dirname, '..', 'layers', 'kafka')),
-    });
-
-    this.consumerFunction = new lambda.Function(this, 'ConsumerFunction', {
-      functionName: `${ns}Consumerfunction`,
-      vpc: props.vpc,
-      vpcSubnets: props.vpc.selectSubnets({ subnetType: ec2.SubnetType.PRIVATE }),
-      securityGroups: [props.securityGroup],
-      code: lambda.Code.fromAsset(path.resolve(__dirname, '..', 'functions')),
-      runtime: lambda.Runtime.PYTHON_3_8,
-      handler: 'consumer.handler',
-      allowPublicSubnet: true,
-      currentVersionOptions: {
-        removalPolicy: cdk.RemovalPolicy.RETAIN,
-      },
-    });
-    this.consumerFunction.addToRolePolicy(new iam.PolicyStatement({
-      actions: ['msk:*'],
-      resources: ['*'],
-    }))
+    this.consumerFunction = new lambdaPython.PythonFunction(
+      this,
+      'ConsumerFunction',
+      {
+        functionName: `${ns}Consumerfunction`,
+        vpc: props.vpc,
+        vpcSubnets: props.vpc.selectSubnets({
+          subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
+        }),
+        securityGroups: [props.securityGroup],
+        entry: path.resolve(__dirname, '..', 'functions'),
+        runtime: lambda.Runtime.PYTHON_3_9,
+        index: 'consumer.py',
+        handler: 'handler',
+        currentVersionOptions: {
+          removalPolicy: cdk.RemovalPolicy.RETAIN,
+        },
+      }
+    );
+    this.consumerFunction.addToRolePolicy(
+      new iam.PolicyStatement({
+        actions: ['msk:*'],
+        resources: ['*'],
+      })
+    );
 
     const mskEventSource = new eventSources.ManagedKafkaEventSource({
       topic: Topic,
       clusterArn: ClusterArn,
       startingPosition: lambda.StartingPosition.TRIM_HORIZON,
-    })
-    this.consumerFunction.addEventSource(mskEventSource)
-
-    this.producerFunction = new lambda.Function(this, 'ProducerFunction', {
-      functionName: `${ns}ProducerFunction`,
-      vpc: props.vpc,
-      vpcSubnets: props.vpc.selectSubnets({ subnetType: ec2.SubnetType.PRIVATE }),
-      securityGroups: [props.securityGroup],
-      code: lambda.Code.fromAsset(path.resolve(__dirname, '..', 'functions')),
-      runtime: lambda.Runtime.PYTHON_3_8,
-      handler: 'producer.handler',
-      layers: [kafkaLayer],
-      allowPublicSubnet: true,
-      environment: {
-        BOOTSTRAP_SERVERS: MskBootstrapServers,
-        KAFKA_VERSION: msk.KafkaVersion.V2_2_1.version,
-      },
-      currentVersionOptions: {
-        removalPolicy: cdk.RemovalPolicy.RETAIN,
-      },
     });
-    this.producerFunction.addToRolePolicy(new iam.PolicyStatement({
-      actions: ['msk:*'],
-      resources: ['*'],
-    }))
+    this.consumerFunction.addEventSource(mskEventSource);
 
-    this.createTopicFunction = new lambda.Function(this, 'CreateTopicFunction', {
-      functionName: `${ns}CreateTopicFunction`,
-      vpc: props.vpc,
-      vpcSubnets: props.vpc.selectSubnets({ subnetType: ec2.SubnetType.PRIVATE }),
-      securityGroups: [props.securityGroup],
-      code: lambda.Code.fromAsset(path.resolve(__dirname, '..', 'functions')),
-      runtime: lambda.Runtime.PYTHON_3_8,
-      handler: 'create_topic.handler',
-      layers: [kafkaLayer],
-      allowPublicSubnet: true,
-      environment: {
-        BOOTSTRAP_SERVERS: MskBootstrapServers,
-        KAFKA_VERSION: msk.KafkaVersion.V2_2_1.version,
-      },
-      currentVersionOptions: {
-        removalPolicy: cdk.RemovalPolicy.RETAIN,
-      },
-    });
-    this.createTopicFunction.addToRolePolicy(new iam.PolicyStatement({
-      actions: ['msk:*'],
-      resources: ['*'],
-    }))
+    this.producerFunction = new lambdaPython.PythonFunction(
+      this,
+      'ProducerFunction',
+      {
+        functionName: `${ns}ProducerFunction`,
+        vpc: props.vpc,
+        vpcSubnets: props.vpc.selectSubnets({
+          subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
+        }),
+        securityGroups: [props.securityGroup],
+        entry: path.resolve(__dirname, '..', 'functions'),
+        runtime: lambda.Runtime.PYTHON_3_9,
+        index: 'producer.py',
+        handler: 'handler',
+        environment: {
+          BOOTSTRAP_SERVERS: MskBootstrapServers,
+          KAFKA_VERSION: msk.KafkaVersion.V2_8_1.version,
+        },
+        currentVersionOptions: {
+          removalPolicy: cdk.RemovalPolicy.RETAIN,
+        },
+      }
+    );
+    this.producerFunction.addToRolePolicy(
+      new iam.PolicyStatement({
+        actions: ['msk:*'],
+        resources: ['*'],
+      })
+    );
 
+    this.createTopicFunction = new lambdaPython.PythonFunction(
+      this,
+      'CreateTopicFunction',
+      {
+        functionName: `${ns}CreateTopicFunction`,
+        vpc: props.vpc,
+        vpcSubnets: props.vpc.selectSubnets({
+          subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
+        }),
+        securityGroups: [props.securityGroup],
+        entry: path.resolve(__dirname, '..', 'functions'),
+        runtime: lambda.Runtime.PYTHON_3_9,
+        index: 'create_topic.py',
+        environment: {
+          BOOTSTRAP_SERVERS: MskBootstrapServers,
+          KAFKA_VERSION: msk.KafkaVersion.V2_8_1.version,
+        },
+        currentVersionOptions: {
+          removalPolicy: cdk.RemovalPolicy.RETAIN,
+        },
+      }
+    );
+    this.createTopicFunction.addToRolePolicy(
+      new iam.PolicyStatement({
+        actions: ['msk:*'],
+        resources: ['*'],
+      })
+    );
   }
-
 }

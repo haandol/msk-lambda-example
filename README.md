@@ -11,8 +11,9 @@ Deploying this cdk will provision below architeture on you AWS Account.
 # Prerequisites
 
 - awscli
-- Nodejs 10.x+
-- Python 3.4+
+- Nodejs 16.x+
+- Python 3.9+
+- Docker
 - AWS Account and Locally configured AWS credential
 
 # Installation
@@ -23,17 +24,11 @@ Install project dependencies
 $ npm i
 ```
 
-Install cdk in global context and run `cdk init` if you did not initailize cdk yet.
+Install cdk in global context and run `cdk bootstrap` if you did not initailize cdk yet.
 
 ```bash
-$ npm i -g cdk@1.119.0
+$ npm i -g aws-cdk
 $ cdk bootstrap
-```
-
-Install python layer
-```bash
-$ cd lib/layers/kafka/python
-$ pip install -r requirements.txt -t .
 ```
 
 Deploy CDK Stacks on AWS
@@ -53,8 +48,8 @@ $ pip install httpie
 
 The repository has two endpoints
 
-* `POST /` - send data to MSK cluster
-* `POST /topic` - create topic
+- `POST /` - send data to MSK cluster
+- `POST /topic` - create topic
 
 After creating MSK cluster,
 
@@ -73,6 +68,7 @@ you can see the MSK trigger has been `Enabled` on you `Consumer` Function on Lam
 <img src="https://haandol.github.io/assets/img/2020/0816/msk-trigger.png" />
 
 4. invoke api-gateway `/topic` to create topic
+
 ```bash
 $ http post https://xxx.execute-api.us-east-1.amazonaws.com/dev/topic name=mytopic
 HTTP/1.1 200 OK
